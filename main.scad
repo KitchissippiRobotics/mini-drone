@@ -21,7 +21,7 @@ PROP_HEIGHT = 4.5;		// 4.5mm from top to bottom of prop hub
 PROP_BASE = 3.6;		// 3.6mm from top to bottom of prop bushing
 
 MOTOR_RING_HEIGHT = 2;
-MOTOR_RING_THICKNESS = 2;
+MOTOR_RING_THICKNESS = 3;
 MOTOR_DIAMETER = 7;		// 7mm wide motor
 MOTOR_HEIGHT = 16;		// 15mm tall motor
 
@@ -30,7 +30,7 @@ RingHeight = 6;			// 6mm motor retaining ring
 DuctHeight = PROP_HEIGHT + PROP_BASE + MOTOR_RING_HEIGHT;		// calculated to be same as the top of prop
 DuctThickness = 0.6;	// 0.6mm thick wall
 
-DuctDiameter = PROP_DIAMETER + PropClearance + 1.5;
+DuctDiameter = PROP_DIAMETER + PropClearance + 3;
 
 DuctOuterDiameter = DuctDiameter + 7.6; // tweak this manually until it fits
 
@@ -63,19 +63,22 @@ module duct_thinwall() {
 	difference() {
 	
 		union() {
-			cylinder(d = MOTOR_DIAMETER + MOTOR_RING_THICKNESS, h = MOTOR_RING_HEIGHT, $fn = fnLevel);
+
+			cylinder(	d1 = MOTOR_DIAMETER + MOTOR_RING_THICKNESS +1,
+						d2 = MOTOR_DIAMETER + MOTOR_RING_THICKNESS,
+					 	h = MOTOR_RING_HEIGHT, $fn = fnLevel);
+					 	
 			
-			// draw supports
-			translate([-1,0,0])
-				cube([2, 20, 2]);
+			
+			rotate([90,0,180])
+			cylinder(d1 = MOTOR_RING_HEIGHT *2, d2 = MOTOR_RING_HEIGHT *2 + 1, h = 20, $fn = fnLevel);
+			
+			rotate([90,0,60])
+			cylinder(d1 = MOTOR_RING_HEIGHT *2, d2 = MOTOR_RING_HEIGHT *2 + 1, h = 20, $fn = fnLevel);
+			
+			rotate([90,0,-60])
+			cylinder(d1 = MOTOR_RING_HEIGHT *2, d2 = MOTOR_RING_HEIGHT *2 + 1, h = 20, $fn = fnLevel);
 	
-			rotate([0,0,120])
-			translate([-1,0,0])
-				cube([2, 20, 2]);
-		
-			rotate([0,0,-120])
-			translate([-1,0,0])
-				cube([2, 20, 2]);
 				
 			// draw duct
 			translate([0,0,DuctHeight])
@@ -97,11 +100,15 @@ module duct_thinwall() {
 		}
 		
 		
-		cylinder(d = MOTOR_DIAMETER, h = MOTOR_RING_HEIGHT, $fn = fnLevel);
+		cylinder(d = MOTOR_DIAMETER, h = MOTOR_RING_HEIGHT + 2, $fn = fnLevel);
 		
 		// remove purposeful overhang
 		translate([-DuctDiameter/2-5,-DuctDiameter/2-5,-10])
 			cube([DuctDiameter + 10,DuctDiameter + 10, 10]);
+			
+		rotate([90,0,180])
+			translate([0,0,10])
+			cylinder(d1 = 2, d2 =2, h = 15, $fn = fnLevel);
 	}
 
 }
