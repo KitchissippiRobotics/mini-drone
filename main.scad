@@ -21,15 +21,15 @@ PROP_HEIGHT = 4.5;		// 4.5mm from top to bottom of prop hub
 PROP_BASE = 3.6;		// 3.6mm from top to bottom of prop bushing
 
 MOTOR_RING_HEIGHT = 2;
-MOTOR_RING_THICKNESS = 3;
+MOTOR_RING_THICKNESS = 4;
 MOTOR_DIAMETER = 7;		// 7mm wide motor
 MOTOR_HEIGHT = 16;		// 15mm tall motor
 
-MotorSpacing = 50;
+MotorSpacing = 53.5;
 
 PropClearance = 0.5;	// 0.5mm clearance from edge of propellor and inside edge of duct
 RingHeight = 6;			// 6mm motor retaining ring
-DuctHeight = PROP_HEIGHT + PROP_BASE + MOTOR_RING_HEIGHT;		// calculated to be same as the top of prop
+DuctHeight = PROP_HEIGHT + PROP_BASE;		// calculated to be same as the top of prop
 DuctThickness = 0.6;	// 0.6mm thick wall
 
 DuctDiameter = PROP_DIAMETER + PropClearance + 3;
@@ -39,7 +39,7 @@ DuctOuterDiameter = DuctDiameter + 7.6; // tweak this manually until it fits
 DuctSpacing = 7.5;
 NACAOverhang = 3;
 
-fnLevel = 100;
+fnLevel = 80;
 nacaType = 0020;
 nacaTilt = 20;
 
@@ -47,11 +47,63 @@ ElectronicsPostSpacing = 14; 	// electronics mounting posts are 14mm apart
 ElectronicsPostDiameter = 2.5;	// 2.5mm
 ElectronicsPostRiser = 3.5;		// 3.5mm
 
-ductRotationTweak = 10;
+// ---------------------------------------------------------------------------------------------------------------------
+// make the base
 
-// prototype testing
+difference() {
+	// rounded rectangle below electronics
+	hull() {
+		translate([10, 13.5, 0])
+		cylinder(d = 3, h = 1.5, $fn = fnLevel);
 
-//duct_thinwall();
+		translate([-10, 13.5, 0])
+		cylinder(d = 3, h = 1.5, $fn = fnLevel);
+
+		translate([10, -13.5, 0])
+		cylinder(d = 3, h = 1.5, $fn = fnLevel);
+
+		translate([-10, -13.5, 0])
+		cylinder(d = 3, h = 1.5, $fn = fnLevel);
+	}
+
+	// cut outs
+	union() { 	
+		// smaller rounded rectangle cut out to make a thiner frame
+		hull() {
+			translate([10 -3, 13.5 -3, -0.25])
+			cylinder(d = 2, h = 2, $fn = fnLevel);
+
+			translate([-10 + 3, 13.5 -3, -0.25])
+			cylinder(d = 2, h = 2, $fn = fnLevel);
+
+			translate([10 -3, -13.5 + 3, -0.25])
+			cylinder(d = 2, h = 2, $fn = fnLevel);
+
+			translate([-10  +3, -13.5 + 3, -0.25])
+			cylinder(d = 2, h = 2, $fn = fnLevel);
+		}
+		
+		// battery connector hole
+		hull() {
+			translate([3, 15, -0.25])
+			cylinder(d = 3, h = 2, $fn = fnLevel);
+
+			translate([-3, 15, -0.25])
+			cylinder(d = 3, h = 2, $fn = fnLevel);
+
+		}
+	}
+}
+
+// do-dads & widgets
+
+base_right_hardpoints();	// right points
+rotate([0,0,180])
+base_right_hardpoints();	// left points
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+ductRotationTweak = 15;
 
 // Make four ducts
 translate([-MotorSpacing/2,-MotorSpacing/2,0])
@@ -73,48 +125,65 @@ rotate([0,0,120 + ductRotationTweak])
 
 
 
-difference() {
-union() {
 
-// electronics posts
-translate([-ElectronicsPostSpacing/2,-ElectronicsPostSpacing/2,0])
-	cylinder(h = MOTOR_RING_HEIGHT +1, d = ElectronicsPostDiameter, $fn = fnLevel);
+// ---------------------------------------------------------------------------------------------------------------------
 
-translate([-ElectronicsPostSpacing/2,ElectronicsPostSpacing/2,0])
-	cylinder(h = MOTOR_RING_HEIGHT +1 + ElectronicsPostRiser, d = ElectronicsPostDiameter, $fn = fnLevel);
-	
-translate([ElectronicsPostSpacing/2,-ElectronicsPostSpacing/2,0])
-	cylinder(h = MOTOR_RING_HEIGHT +1 + ElectronicsPostRiser, d = ElectronicsPostDiameter, $fn = fnLevel);
-	
-translate([ElectronicsPostSpacing/2,ElectronicsPostSpacing/2,0])
-	cylinder(h = MOTOR_RING_HEIGHT +1, d = ElectronicsPostDiameter, $fn = fnLevel);
+module base_right_hardpoints() {
+	// Front & Right Central Structure ----
 
-rotate([0,90,51])
-	cylinder( 	d1 = MOTOR_RING_HEIGHT *2,
-				d2 = MOTOR_RING_HEIGHT *2 + 1 ,
-		 		h = 16, $fn = fnLevel);
+	// front right arm
+	hull() {
+		translate([-ElectronicsPostSpacing/2,-ElectronicsPostSpacing/2,0])
+			cylinder(h = MOTOR_RING_HEIGHT, d = ElectronicsPostDiameter * 2, $fn = fnLevel);
+		translate([-ElectronicsPostSpacing/2 - 5,-ElectronicsPostSpacing/2 - 5,0])
+			cylinder(h = MOTOR_RING_HEIGHT, d = 4, $fn = fnLevel);
+	}
+
+	// front right elastic nub
+	hull() {
+		translate([-ElectronicsPostSpacing/2,-ElectronicsPostSpacing/2,0])
+			cylinder(h = 1.5, d = ElectronicsPostDiameter * 2, $fn = fnLevel);
+		translate([-ElectronicsPostSpacing/2 - 6,-ElectronicsPostSpacing/2,0])
+			cylinder(h = 1.5, d = 2, $fn = fnLevel);
+	}
+
+	// front right electronics post
+	translate([-ElectronicsPostSpacing/2,-ElectronicsPostSpacing/2,0])
+		cylinder(h = MOTOR_RING_HEIGHT +1 + ElectronicsPostRiser, d = ElectronicsPostDiameter, $fn = fnLevel);
+
+	// Rear & Right Central Structure ----
 	
-rotate([0,90,-51])
-	cylinder( 	d1 = MOTOR_RING_HEIGHT *2,
-				d2 = MOTOR_RING_HEIGHT *2 + 1 ,
-		 		h = 16, $fn = fnLevel);
+	difference() {
+		union() {
+			// rear right arm
+			hull() {
+				translate([-ElectronicsPostSpacing/2,ElectronicsPostSpacing/2,0])
+					cylinder(h = MOTOR_RING_HEIGHT, d = ElectronicsPostDiameter * 2, $fn = fnLevel);
+				translate([-ElectronicsPostSpacing/2 - 5,ElectronicsPostSpacing/2 + 5,0])
+					cylinder(h = MOTOR_RING_HEIGHT, d = 4, $fn = fnLevel);
+			}
+		
+			// rear right elastic nub
+			hull() {
+				translate([-ElectronicsPostSpacing/2,ElectronicsPostSpacing/2,0])
+					cylinder(h = MOTOR_RING_HEIGHT, d = ElectronicsPostDiameter * 2, $fn = fnLevel);
+				translate([-ElectronicsPostSpacing/2 - 5,ElectronicsPostSpacing/2,0])
+					cylinder(h = MOTOR_RING_HEIGHT, d = 2, $fn = fnLevel);
+			}
 	
-rotate([0,90,51 + 180])
-	cylinder( 	d1 = MOTOR_RING_HEIGHT *2,
-				d2 = MOTOR_RING_HEIGHT *2 + 1 ,
-		 		h = 16, $fn = fnLevel);
+			// electronics post nub
+			translate([-ElectronicsPostSpacing/2,ElectronicsPostSpacing/2,0])
+				cylinder(h = MOTOR_RING_HEIGHT +1, d = ElectronicsPostDiameter + 2, $fn = fnLevel);
+		}
 	
-rotate([0,90,-51 - 180])
-	cylinder( 	d1 = MOTOR_RING_HEIGHT *2,
-				d2 = MOTOR_RING_HEIGHT *2 + 1 ,
-		 		h = 16, $fn = fnLevel);
+		// cut out little screw hole
+		translate([-ElectronicsPostSpacing/2,ElectronicsPostSpacing/2,0.3])
+			cylinder(h = MOTOR_RING_HEIGHT +2, d = 2, $fn = fnLevel);
+
+	}
 }
 
-// remove purposeful overhang
-		translate([-DuctDiameter/2-5,-DuctDiameter/2-5,-10])
-			cube([DuctDiameter + 10,DuctDiameter + 10, 10]);
-		}
-
+// ---------------------------------------------------------------------------------------------------------------------
 
 module duct_thinwall() {
 	difference() {
@@ -126,15 +195,19 @@ module duct_thinwall() {
 					 	h = MOTOR_RING_HEIGHT, $fn = fnLevel);
 					 	
 			
+			// three arms joining the duct to the motor ring
 			
-			rotate([90,0,180])
-			cylinder(d1 = MOTOR_RING_HEIGHT *2, d2 = MOTOR_RING_HEIGHT *2 + 1, h = 20, $fn = fnLevel);
+			rotate([88,0,180])
+			scale([0.75,1,1])
+				cylinder(d1 = MOTOR_RING_HEIGHT *2, d2 = MOTOR_RING_HEIGHT *2 + 1, h = 20, $fn = fnLevel);
 			
-			rotate([90,0,60])
-			cylinder(d1 = MOTOR_RING_HEIGHT *2, d2 = MOTOR_RING_HEIGHT *2 + 1, h = 20, $fn = fnLevel);
+			rotate([88,0,60])
+			scale([0.75,1,1])
+				cylinder(d1 = MOTOR_RING_HEIGHT *2, d2 = MOTOR_RING_HEIGHT *2 + 1, h = 20, $fn = fnLevel);
 			
-			rotate([90,0,-60])
-			cylinder(d1 = MOTOR_RING_HEIGHT *2, d2 = MOTOR_RING_HEIGHT *2 + 1, h = 20, $fn = fnLevel);
+			rotate([88,0,-60])
+			scale([0.75,1,1])
+				cylinder(d1 = MOTOR_RING_HEIGHT *2, d2 = MOTOR_RING_HEIGHT *2 + 1, h = 20, $fn = fnLevel);
 	
 				
 			// draw duct
@@ -163,9 +236,7 @@ module duct_thinwall() {
 		translate([-DuctDiameter/2-5,-DuctDiameter/2-5,-10])
 			cube([DuctDiameter + 10,DuctDiameter + 10, 10]);
 			
-		rotate([90,0,180])
-			translate([0,0,10])
-			cylinder(d1 = 2, d2 =2, h = 15, $fn = fnLevel);
+
 	}
 
 }
