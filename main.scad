@@ -35,10 +35,11 @@ DuctDiameter = PROP_DIAMETER + PropClearance + 1.5;
 DuctOuterDiameter = DuctDiameter + 7.6; // tweak this manually until it fits
 
 DuctSpacing = 7.5;
+NACAOverhang = 3;
 
 fnLevel = 200;
 nacaType = 0020;
-nacaTilt = 0;
+nacaTilt = 20;
 
 // prototype testing
 
@@ -59,12 +60,12 @@ translate([DuctOuterDiameter/2,DuctOuterDiameter/2,0])
 */
 
 module duct_thinwall() {
-	// draw central motor hole
 	difference() {
+	
 		union() {
 			cylinder(d = MOTOR_DIAMETER + MOTOR_RING_THICKNESS, h = MOTOR_RING_HEIGHT, $fn = fnLevel);
 			
-			// draw support
+			// draw supports
 			translate([-1,0,0])
 				cube([2, 20, 2]);
 	
@@ -75,31 +76,34 @@ module duct_thinwall() {
 			rotate([0,0,-120])
 			translate([-1,0,0])
 				cube([2, 20, 2]);
+				
+			// draw duct
+			translate([0,0,DuctHeight])
+			rotate([0,180,0])
+				rotate_extrude($fn = fnLevel) {
+				translate([DuctDiameter/2,0,10])
+				rotate([0,nacaTilt,90])
+
+					flat_airfoil(naca=nacaType, L = DuctHeight +NACAOverhang, N = 100, open = false);
+				}
 		}
-		cylinder(d = MOTOR_DIAMETER, h = MOTOR_RING_HEIGHT, $fn = fnLevel);
-	}
-	
-	
-
-	// draw duct
-	translate([0,0,DuctHeight])
-	rotate([0,180,0])
-	difference() {
-		rotate_extrude($fn = fnLevel) {
-			translate([DuctDiameter/2,0,10])
-			rotate([0,nacaTilt,90])
-
-				flat_airfoil(naca=nacaType, L = DuctHeight, N = 100, open = false);
-		}
-
-		//translate([0,0, DuctThickness])
-		rotate_extrude($fn = fnLevel) {
+		
+		translate([0,0,DuctHeight])
+		rotate([0,180,0])
+			rotate_extrude($fn = fnLevel) {
 			translate([DuctThickness + (DuctDiameter/2),0,10])
 			rotate([0,nacaTilt,90])
-				flat_airfoil(naca=nacaType, L = DuctHeight, N = 100, open = false);
+				flat_airfoil(naca=nacaType, L = DuctHeight +NACAOverhang, N = 100, open = false);
 		}
-
+		
+		
+		cylinder(d = MOTOR_DIAMETER, h = MOTOR_RING_HEIGHT, $fn = fnLevel);
+		
+		// remove purposeful overhang
+		translate([-DuctDiameter/2-5,-DuctDiameter/2-5,-10])
+			cube([DuctDiameter + 10,DuctDiameter + 10, 10]);
 	}
+
 }
 
 
