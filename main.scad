@@ -28,13 +28,13 @@ RingHeight = 6;			// 6mm motor retaining ring
 DuctHeight = 10;		// calculated to be same as the top of prop
 DuctThickness = 1;	// 0.6mm thick wall
 
-DuctDiameter = PROP_DIAMETER + PropClearance;
+DuctDiameter = PROP_DIAMETER + PropClearance + 3;
 
 DuctOuterDiameter = DuctDiameter + 7.6; // tweak this manually until it fits
 
 DuctSpacing = 7.5;
 
-fnLevel = 30;
+fnLevel = 200;
 nacaType = 0020;
 nacaTilt = 20;
 
