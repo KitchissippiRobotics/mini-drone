@@ -21,6 +21,7 @@ PROP_HEIGHT = 4.5;		// 4.5mm from top to bottom of prop hub
 PROP_BASE = 3.6;		// 3.6mm from top to bottom of prop bushing
 
 MOTOR_RING_HEIGHT = 2;
+MOTOR_RING_THICKNESS = 2;
 MOTOR_DIAMETER = 7;		// 7mm wide motor
 MOTOR_HEIGHT = 16;		// 15mm tall motor
 
@@ -37,7 +38,7 @@ DuctSpacing = 7.5;
 
 fnLevel = 200;
 nacaType = 0020;
-nacaTilt = 20;
+nacaTilt = 0;
 
 // prototype testing
 
@@ -59,6 +60,25 @@ translate([DuctOuterDiameter/2,DuctOuterDiameter/2,0])
 
 module duct_thinwall() {
 	// draw central motor hole
+	difference() {
+		union() {
+			cylinder(d = MOTOR_DIAMETER + MOTOR_RING_THICKNESS, h = MOTOR_RING_HEIGHT, $fn = fnLevel);
+			
+			// draw support
+			translate([-1,0,0])
+				cube([2, 20, 2]);
+	
+			rotate([0,0,120])
+			translate([-1,0,0])
+				cube([2, 20, 2]);
+		
+			rotate([0,0,-120])
+			translate([-1,0,0])
+				cube([2, 20, 2]);
+		}
+		cylinder(d = MOTOR_DIAMETER, h = MOTOR_RING_HEIGHT, $fn = fnLevel);
+	}
+	
 	
 
 	// draw duct
