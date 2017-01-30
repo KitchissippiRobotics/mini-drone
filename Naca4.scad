@@ -27,7 +27,7 @@ help();
 // this is the object
 module airfoil(naca=12, L = 100, N = 81, h = 1, open = false)
 {
-  //linear_extrude(height = h)
+  linear_extrude(height = h)
   polygon(points = airfoil_data(naca, L, N, open));
 }
 

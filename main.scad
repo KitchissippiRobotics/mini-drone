@@ -25,28 +25,53 @@ MOTOR_HEIGHT = 16;		// 15mm tall motor
 
 PropClearance = 0.5;	// 0.5mm clearance from edge of propellor and inside edge of duct
 RingHeight = 6;			// 6mm motor retaining ring
-DuctHeight = RingHeight + PROP_BASE + PROP_HEIGHT;		// calculated to be same as the top of prop
-DuctThickness = 0.6;	// 0.6mm thick wall
+DuctHeight = 10;		// calculated to be same as the top of prop
+DuctThickness = 1;	// 0.6mm thick wall
 
 DuctDiameter = PROP_DIAMETER + PropClearance;
+
+DuctOuterDiameter = DuctDiameter + 7.6; // tweak this manually until it fits
+
+DuctSpacing = 7.5;
+
+fnLevel = 30;
+nacaType = 0020;
+nacaTilt = 20;
 
 // prototype testing
 
 duct_thinwall();
 
-module duct_thinwall() {
-difference() {
-	rotate_extrude() {
-		translate([3.8 + (DuctDiameter/2),0,10])
-		rotate([0,20,90])
+// Make four ducts
+/*translate([-DuctOuterDiameter/2,-DuctOuterDiameter/2,0])
+	duct_thinwall();
 
-			flat_airfoil(naca=2015, L = DuctHeight, N = 100, h =1, open = false);
+translate([DuctOuterDiameter/2,-DuctOuterDiameter/2,0])
+	duct_thinwall();
+
+translate([-DuctOuterDiameter/2,DuctOuterDiameter/2,0])
+	duct_thinwall();
+
+translate([DuctOuterDiameter/2,DuctOuterDiameter/2,0])
+	duct_thinwall();
+*/
+
+module duct_thinwall() {
+translate([0,0,DuctHeight])
+rotate([0,180,0])
+difference() {
+	rotate_extrude($fn = fnLevel) {
+		translate([DuctDiameter/2,0,10])
+		rotate([0,nacaTilt,90])
+
+			flat_airfoil(naca=nacaType, L = DuctHeight, N = 100, open = false);
 	}
 
-	rotate_extrude() {
-		translate([DuctThickness + 3.8 + (DuctDiameter/2),0,10])
-		rotate([0,20,90])
-			flat_airfoil(naca=2015, L = DuctHeight, N = 100, h =1, open = false);
+	//translate([0,0, DuctThickness])
+	rotate_extrude($fn = fnLevel) {
+		translate([DuctThickness + (DuctDiameter/2),0,10])
+		rotate([0,nacaTilt,90])
+			flat_airfoil(naca=nacaType, L = DuctHeight, N = 100, open = false);
 	}
 
 }
