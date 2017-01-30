@@ -25,6 +25,8 @@ MOTOR_RING_THICKNESS = 3;
 MOTOR_DIAMETER = 7;		// 7mm wide motor
 MOTOR_HEIGHT = 16;		// 15mm tall motor
 
+MotorSpacing = 50;
+
 PropClearance = 0.5;	// 0.5mm clearance from edge of propellor and inside edge of duct
 RingHeight = 6;			// 6mm motor retaining ring
 DuctHeight = PROP_HEIGHT + PROP_BASE + MOTOR_RING_HEIGHT;		// calculated to be same as the top of prop
@@ -37,27 +39,82 @@ DuctOuterDiameter = DuctDiameter + 7.6; // tweak this manually until it fits
 DuctSpacing = 7.5;
 NACAOverhang = 3;
 
-fnLevel = 200;
+fnLevel = 100;
 nacaType = 0020;
 nacaTilt = 20;
 
+ElectronicsPostSpacing = 14; 	// electronics mounting posts are 14mm apart
+ElectronicsPostDiameter = 2.5;	// 2.5mm
+ElectronicsPostRiser = 3.5;		// 3.5mm
+
+ductRotationTweak = 10;
+
 // prototype testing
 
-duct_thinwall();
+//duct_thinwall();
 
 // Make four ducts
-/*translate([-DuctOuterDiameter/2,-DuctOuterDiameter/2,0])
+translate([-MotorSpacing/2,-MotorSpacing/2,0])
+rotate([0,0,-60 + ductRotationTweak])
 	duct_thinwall();
 
-translate([DuctOuterDiameter/2,-DuctOuterDiameter/2,0])
+translate([MotorSpacing/2,-MotorSpacing/2,0])
+rotate([0,0,60  -ductRotationTweak])
 	duct_thinwall();
 
-translate([-DuctOuterDiameter/2,DuctOuterDiameter/2,0])
+translate([-MotorSpacing/2,MotorSpacing/2,0])
+rotate([0,0,-120 - ductRotationTweak])
 	duct_thinwall();
 
-translate([DuctOuterDiameter/2,DuctOuterDiameter/2,0])
+translate([MotorSpacing/2,MotorSpacing/2,0])
+rotate([0,0,120 + ductRotationTweak])
 	duct_thinwall();
-*/
+
+
+
+
+difference() {
+union() {
+
+// electronics posts
+translate([-ElectronicsPostSpacing/2,-ElectronicsPostSpacing/2,0])
+	cylinder(h = MOTOR_RING_HEIGHT +1, d = ElectronicsPostDiameter, $fn = fnLevel);
+
+translate([-ElectronicsPostSpacing/2,ElectronicsPostSpacing/2,0])
+	cylinder(h = MOTOR_RING_HEIGHT +1 + ElectronicsPostRiser, d = ElectronicsPostDiameter, $fn = fnLevel);
+	
+translate([ElectronicsPostSpacing/2,-ElectronicsPostSpacing/2,0])
+	cylinder(h = MOTOR_RING_HEIGHT +1 + ElectronicsPostRiser, d = ElectronicsPostDiameter, $fn = fnLevel);
+	
+translate([ElectronicsPostSpacing/2,ElectronicsPostSpacing/2,0])
+	cylinder(h = MOTOR_RING_HEIGHT +1, d = ElectronicsPostDiameter, $fn = fnLevel);
+
+rotate([0,90,51])
+	cylinder( 	d1 = MOTOR_RING_HEIGHT *2,
+				d2 = MOTOR_RING_HEIGHT *2 + 1 ,
+		 		h = 16, $fn = fnLevel);
+	
+rotate([0,90,-51])
+	cylinder( 	d1 = MOTOR_RING_HEIGHT *2,
+				d2 = MOTOR_RING_HEIGHT *2 + 1 ,
+		 		h = 16, $fn = fnLevel);
+	
+rotate([0,90,51 + 180])
+	cylinder( 	d1 = MOTOR_RING_HEIGHT *2,
+				d2 = MOTOR_RING_HEIGHT *2 + 1 ,
+		 		h = 16, $fn = fnLevel);
+	
+rotate([0,90,-51 - 180])
+	cylinder( 	d1 = MOTOR_RING_HEIGHT *2,
+				d2 = MOTOR_RING_HEIGHT *2 + 1 ,
+		 		h = 16, $fn = fnLevel);
+}
+
+// remove purposeful overhang
+		translate([-DuctDiameter/2-5,-DuctDiameter/2-5,-10])
+			cube([DuctDiameter + 10,DuctDiameter + 10, 10]);
+		}
+
 
 module duct_thinwall() {
 	difference() {
