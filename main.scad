@@ -139,16 +139,7 @@ difference() {
 
 }
 
-difference() {
-	union() {
-		// do-dads & widgets
-		base_right_hardpoints();	// right points
-		rotate([0,0,180])
-		base_right_hardpoints();	// left points
-	}
 
-	carve_ducts();
-}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -157,8 +148,12 @@ supportTiltAngle = 22.5;
 supportScale = 0.25;
 // Make four ducts
 
-
 draw_ducts();
+
+
+difference() {
+	union() {
+
 
 side_support();
 
@@ -171,49 +166,46 @@ rotate([0,0,180])
 rotate([0,0,-90])
 	side_support();
 
+		// do-dads & widgets
+		base_right_hardpoints();	// right points
+		rotate([0,0,180])
+		base_right_hardpoints();	// left points
+	}
+
+	carve_ducts();
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 module side_support() {
 
-difference() {
-union() {
-	/*translate([-24.75,7,0])
-	rotate([90,0,0])
-	cylinder(h = 14, d = 2, $fn = fnLevel);
 
-	translate([-24.75,7.5,10.75])
-	rotate([90,0,0])
-	cylinder(h = 15, d = 1.2, $fn = fnLevel);*/
+	difference() {
+		hull() {
+			translate([-25,10,DuctHeight])
+			rotate([0,90,90])
+			linear_extrude(height = 1)
+			flat_airfoil(naca=nacaType, L = DuctHeight +NACAOverhang, N = 100, open = false);
+			translate([-25,-10,DuctHeight])
+			rotate([0,90,90])
+			linear_extrude(height = 1)
+			flat_airfoil(naca=nacaType, L = DuctHeight +NACAOverhang, N = 100, open = false);
+		}
 
-	hull() {
-	translate([-25,6.5,8])
-	rotate([0,90,0])
-	scale([1,0.2,1])
-		cylinder(h = 0.6, d = 10, $fn = fnLevel);
+		hull() {
+			translate([-25 + DuctThickness,10,DuctHeight])
+			rotate([0,90,90])
+			linear_extrude(height = 1)
+			flat_airfoil(naca=nacaType, L = DuctHeight +NACAOverhang, N = 100, open = false);
+			translate([-25 + DuctThickness,-10,DuctHeight])
+			rotate([0,90,90])
+			linear_extrude(height = 1)
+			flat_airfoil(naca=nacaType, L = DuctHeight +NACAOverhang, N = 100, open = false);
+		}
 
-	translate([-25,5.5,0])
-	rotate([0,90,0])
-	scale([1,1,1])
-		cylinder(h = 0.6, d = 3, $fn = fnLevel);
-
-	translate([-25,-6.5,8])
-	rotate([0,90,0])
-	scale([1,0.2,1])
-		cylinder(h = 0.6, d = 10, $fn = fnLevel);
-
-	translate([-25,-5.5,0])
-	rotate([0,90,0])
-	scale([1,1,1])
-		cylinder(h = 0.6, d = 3, $fn = fnLevel);
+		translate([-100,-100, -20])
+		cube([200,200,20]);
 	}
-}
-/*translate([-100,-100, 4])
-cube([200,200,20]);*/
-
-translate([-100,-100, -20])
-cube([200,200,20]);
-}
 
 }
 
