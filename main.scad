@@ -39,7 +39,7 @@ DuctOuterDiameter = DuctDiameter + 7.6; // tweak this manually until it fits
 DuctSpacing = 7.5;
 NACAOverhang = 3;
 
-fnLevel = 200;
+fnLevel = 20;
 nacaType = 0020;
 nacaTilt = 20;
 
@@ -49,6 +49,8 @@ ElectronicsPostRiser = 3.5;		// 3.5mm
 
 // ---------------------------------------------------------------------------------------------------------------------
 // make the base
+
+
 
 difference() {
 	// rounded rectangle below electronics
@@ -137,41 +139,26 @@ difference() {
 
 }
 
+difference() {
+	union() {
+		// do-dads & widgets
+		base_right_hardpoints();	// right points
+		rotate([0,0,180])
+		base_right_hardpoints();	// left points
+	}
 
-
-// do-dads & widgets
-
-base_right_hardpoints();	// right points
-rotate([0,0,180])
-base_right_hardpoints();	// left points
+	carve_ducts();
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 ductRotationTweak = 15;
 supportTiltAngle = 22.5;
+supportScale = 0.25;
 // Make four ducts
 
 
-// front right
-translate([-MotorSpacing/2,-MotorSpacing/2,0])
-rotate([0,0,-60 + ductRotationTweak])
-	duct_thinwall(supportTiltAngle);
-
-// front left
-translate([MotorSpacing/2,-MotorSpacing/2,0])
-rotate([0,0,60  -ductRotationTweak])
-	duct_thinwall(-supportTiltAngle);
-
-// rear right
-translate([-MotorSpacing/2,MotorSpacing/2,0])
-rotate([0,0,-120 - ductRotationTweak])
-	duct_thinwall(-supportTiltAngle);
-
-
-// rear left
-translate([MotorSpacing/2,MotorSpacing/2,0])
-rotate([0,0,120 + ductRotationTweak])
-	duct_thinwall(supportTiltAngle);
+draw_ducts();
 
 side_support();
 
@@ -240,7 +227,7 @@ module base_right_hardpoints() {
 	elasticNubAngle = 0;
 
 	// front right arm
-	hull() {
+	#hull() {
 		translate([-ElectronicsPostSpacing/2,-ElectronicsPostSpacing/2,0])
 			cylinder(h = MOTOR_RING_HEIGHT /2, d = ElectronicsPostDiameter * 2, $fn = fnLevel);
 		translate([-ElectronicsPostSpacing/2 - 5.5,-ElectronicsPostSpacing/2 - 5.5,0])
@@ -297,7 +284,7 @@ module base_right_hardpoints() {
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-module duct_thinwall(supportTilt = 0) {
+module duct_thinwall(supportTilt = 0, supportThickness = 0.35) {
 	difference() {
 
 		union() {
@@ -310,15 +297,15 @@ module duct_thinwall(supportTilt = 0) {
 			// three arms joining the duct to the motor ring
 
 			rotate([88,supportTilt,180])
-			scale([0.5,1,1])
+			scale([supportThickness,1,1])
 				cylinder(d1 = MOTOR_RING_HEIGHT, d2 = MOTOR_RING_HEIGHT + 1, h = DuctDiameter / 2, $fn = fnLevel);
 
 			rotate([88,supportTilt,60])
-			scale([0.5,1,1])
+			scale([supportThickness,1,1])
 				cylinder(d1 = MOTOR_RING_HEIGHT, d2 = MOTOR_RING_HEIGHT + 1, h =  DuctDiameter / 2, $fn = fnLevel);
 
 			rotate([88,supportTilt,-60])
-			scale([0.5,1,1])
+			scale([supportThickness,1,1])
 				cylinder(d1 = MOTOR_RING_HEIGHT, d2 = MOTOR_RING_HEIGHT + 1, h =  DuctDiameter / 2, $fn = fnLevel);
 
 
@@ -333,6 +320,7 @@ module duct_thinwall(supportTilt = 0) {
 				}
 		}
 
+		// carve out offset duct
 		translate([0,0,DuctHeight])
 		rotate([0,180,0])
 			rotate_extrude($fn = fnLevel) {
@@ -353,7 +341,88 @@ module duct_thinwall(supportTilt = 0) {
 
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+// draw four ducts
 
+module draw_ducts()
+{
+	// front right
+	translate([-MotorSpacing/2,-MotorSpacing/2,0])
+	rotate([0,0,-60 + ductRotationTweak])
+		duct_thinwall(supportTiltAngle, supportScale);
+
+	// front left
+	translate([MotorSpacing/2,-MotorSpacing/2,0])
+	rotate([0,0,60  -ductRotationTweak])
+		duct_thinwall(-supportTiltAngle, supportScale);
+
+	// rear right
+	translate([-MotorSpacing/2,MotorSpacing/2,0])
+	rotate([0,0,-120 - ductRotationTweak])
+		duct_thinwall(-supportTiltAngle, supportScale);
+
+
+	// rear left
+	translate([MotorSpacing/2,MotorSpacing/2,0])
+	rotate([0,0,120 + ductRotationTweak])
+		duct_thinwall(supportTiltAngle, supportScale);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// draw four duct bulks
+
+module carve_ducts()
+{
+		// front right
+	translate([-MotorSpacing/2,-MotorSpacing/2,0])
+	rotate([0,0,-60 + ductRotationTweak])
+		duct_bulk();
+
+	// front left
+	translate([MotorSpacing/2,-MotorSpacing/2,0])
+	rotate([0,0,60  -ductRotationTweak])
+		duct_bulk(-supportTiltAngle, supportScale);
+
+	// rear right
+	translate([-MotorSpacing/2,MotorSpacing/2,0])
+	rotate([0,0,-120 - ductRotationTweak])
+		duct_bulk();
+
+
+	// rear left
+	translate([MotorSpacing/2,MotorSpacing/2,0])
+	rotate([0,0,120 + ductRotationTweak])
+		duct_bulk();
+}
+// ---------------------------------------------------------------------------------------------------------------------
+// solid bulk of the duct - used for carving the shape out of other objects
+
+module duct_bulk()
+{
+		difference() {
+			hull() {
+			translate([0,0,DuctHeight])
+			rotate([0,180,0])
+			rotate_extrude($fn = fnLevel) {
+				translate([DuctDiameter/2,0,10])
+				rotate([0,nacaTilt,90])
+					flat_airfoil(naca=nacaType, L = DuctHeight +NACAOverhang, N = 100, open = false);
+				}
+			}
+
+			// carve out offset duct
+			translate([0,0,DuctHeight])
+			rotate([0,180,0])
+			rotate_extrude($fn = fnLevel) {
+				translate([DuctThickness + (DuctDiameter/2),0,10])
+				rotate([0,nacaTilt,90])
+					flat_airfoil(naca=nacaType, L = DuctHeight +NACAOverhang, N = 100, open = false);
+			}
+		}
+
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 module flat_airfoil(naca=12, L = 100, N = 81, h = 1, open = false)
 {
   //linear_extrude(height = h)
