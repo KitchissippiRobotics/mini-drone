@@ -227,11 +227,24 @@ module base_right_hardpoints() {
 	elasticNubAngle = 0;
 
 	// front right arm
-	#hull() {
+	hull() {
 		translate([-ElectronicsPostSpacing/2,-ElectronicsPostSpacing/2,0])
 			cylinder(h = MOTOR_RING_HEIGHT /2, d = ElectronicsPostDiameter * 2, $fn = fnLevel);
-		translate([-ElectronicsPostSpacing/2 - 5.5,-ElectronicsPostSpacing/2 - 5.5,0])
+		translate([-ElectronicsPostSpacing/2 - 8,-ElectronicsPostSpacing/2 - 8,0])
 			cylinder(h = MOTOR_RING_HEIGHT /2, d = 4, $fn = fnLevel);
+	}
+
+	difference() {
+		hull() {
+			translate([-ElectronicsPostSpacing/2 - 6,-ElectronicsPostSpacing/2 - 6,2])
+				sphere(d = 4, $fn = fnLevel);
+
+			translate([-ElectronicsPostSpacing/2 - 6,-ElectronicsPostSpacing/2 - 6,12])
+				sphere(d = 1, $fn = fnLevel);
+		}
+
+		translate([-100,-100, -20])
+			cube([200,200,20]);
 	}
 
 	// front right elastic nub
@@ -258,8 +271,21 @@ module base_right_hardpoints() {
 			hull() {
 				translate([-ElectronicsPostSpacing/2,ElectronicsPostSpacing/2,0])
 					cylinder(h = MOTOR_RING_HEIGHT /2, d = ElectronicsPostDiameter * 2, $fn = fnLevel);
-				translate([-ElectronicsPostSpacing/2 - 5.5,ElectronicsPostSpacing/2 + 5.5,0])
+				translate([-ElectronicsPostSpacing/2 - 8,ElectronicsPostSpacing/2 + 8,0])
 					cylinder(h = MOTOR_RING_HEIGHT /2, d = 4, $fn = fnLevel);
+			}
+
+			difference() {
+				hull() {
+					translate([-ElectronicsPostSpacing/2 - 6, ElectronicsPostSpacing/2 + 6,2])
+						sphere(d = 4.5, $fn = fnLevel);
+
+					translate([-ElectronicsPostSpacing/2 - 6, ElectronicsPostSpacing/2 + 6,12])
+						sphere(d = 1, $fn = fnLevel);
+				}
+
+				translate([-100,-100, -20])
+					cube([200,200,20]);
 			}
 
 			// rear right elastic nub
